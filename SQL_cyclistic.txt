@@ -1,0 +1,503 @@
+# STEP 1: Create Database "Main_Bike_Share"
+
+CREATE DATABASE IF NOT EXISTS Main_Bike_Share;
+
+# STEP 2: Create 2022_original Table (to be loaded into the database as.csv files)
+
+CREATE TABLE IF NOT EXISTS 2022_original (
+      ride_id TEXT,
+	  rideable_type TEXT,
+	  started_at TIMESTAMP,
+	  ended_at   TIMESTAMP,
+	  start_station_name TEXT,
+	  start_station_id TEXT,
+	  end_station_name TEXT,
+	  end_station_id TEXT,
+	  start_lat DECIMAL(10,8),
+	  start_lng DECIMAL(11,8),
+	  end_lat DECIMAL(10,8),
+	  end_lng DECIMAL(11,8),
+	  member_casual TEXT
+	  );
+      
+# Step 3: Load the CSV files into the table previously created (loaded month by month into a unique table called 2022_original, previously created).
+
+LOAD DATA INFILE 'C:\\ProgramData\\MySQL\\MySQL Server 8.0\\Uploads\\Cyclistic_2022_01.csv'
+INTO TABLE 2022_original
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+LOAD DATA INFILE 'C:\\ProgramData\\MySQL\\MySQL Server 8.0\\Uploads\\Cyclistic_2022_02.csv'
+INTO TABLE 2022_original
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+LOAD DATA INFILE 'C:\\ProgramData\\MySQL\\MySQL Server 8.0\\Uploads\\Cyclistic_2022_03.csv'
+INTO TABLE 2022_original
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+LOAD DATA INFILE 'C:\\ProgramData\\MySQL\\MySQL Server 8.0\\Uploads\\Cyclistic_2022_04.csv'
+INTO TABLE 2022_original
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+LOAD DATA INFILE 'C:\\ProgramData\\MySQL\\MySQL Server 8.0\\Uploads\\Cyclistic_2022_05.csv'
+INTO TABLE 2022_original
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+LOAD DATA INFILE 'C:\\ProgramData\\MySQL\\MySQL Server 8.0\\Uploads\\Cyclistic_2022_06.csv'
+INTO TABLE 2022_original
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+LOAD DATA INFILE 'C:\\ProgramData\\MySQL\\MySQL Server 8.0\\Uploads\\Cyclistic_2022_06.csv'
+INTO TABLE 2022_original
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+LOAD DATA INFILE 'C:\\ProgramData\\MySQL\\MySQL Server 8.0\\Uploads\\Cyclistic_2022_07.csv'
+INTO TABLE 2022_original
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+LOAD DATA INFILE 'C:\\ProgramData\\MySQL\\MySQL Server 8.0\\Uploads\\Cyclistic_2022_08.csv'
+INTO TABLE 2022_original
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+LOAD DATA INFILE 'C:\\ProgramData\\MySQL\\MySQL Server 8.0\\Uploads\\Cyclistic_2022_09.csv'
+INTO TABLE 2022_original
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+LOAD DATA INFILE 'C:\\ProgramData\\MySQL\\MySQL Server 8.0\\Uploads\\Cyclistic_2022_10.csv'
+INTO TABLE 2022_original
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+LOAD DATA INFILE 'C:\\ProgramData\\MySQL\\MySQL Server 8.0\\Uploads\\Cyclistic_2022_11.csv'
+INTO TABLE 2022_original
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+LOAD DATA INFILE 'C:\\ProgramData\\MySQL\\MySQL Server 8.0\\Uploads\\Cyclistic_2022_12.csv'
+INTO TABLE 2022_original
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+#STEP 4: Check if the table has been loaded correctly and how many fields are in it.
+
+SELECT * FROM 2022_original;
+       # After the Query, i know that there are 5.547.140 rows in the original Dataset-
+       
+#STEP 5: To keep track of the PREPARE PHASE, I saved the 2022_original table as a csv file.
+
+SELECT * INTO OUTFILE 'C:\\ProgramData\\MySQL\\MySQL Server 8.0\\Uploads\\2022_original.csv' FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"' ESCAPED BY '\\' LINES TERMINATED BY '\n' FROM 2022_original;
+
+#STEP 6: Check if there are duplicate fields.
+
+SELECT DISTINCT(ride_id) FROM 2022_original;
+	# After running the query, I know that there are 4.777.936 rows, which means that there aren duplocated fields.
+    
+# STEP 7: Now I am going to check if there are null or empty fields in all the columns.
+    
+SELECT *
+  FROM 2022_original
+   WHERE (ride_id IS NULL OR TRIM(ride_id)='')
+   OR (rideable_type IS NULL OR TRIM(rideable_type)='')
+   OR (started_at IS NULL OR TRIM(started_at)='')
+   OR (ended_at IS NULL OR TRIM(ended_at)='')
+   OR (start_station_name IS NULL OR TRIM(start_station_name)='')
+   OR (start_station_id IS NULL OR TRIM(start_station_id)='')
+   OR (end_station_name IS NULL OR TRIM(end_station_name)='')
+   OR (end_station_id IS NULL OR TRIM(end_station_id)='')
+   OR (start_lat IS NULL OR TRIM(start_lat)='')
+   OR (start_lng IS NULL OR TRIM(start_lng)='')
+   OR (end_lat IS NULL OR TRIM(end_lat)='')
+   OR (end_lng IS NULL OR TRIM(end_lng)='')
+   OR (member_casual IS NULL OR TRIM(member_casual)=''); 
+            # There are 1.227.638 null or empty fields in the 2022_original Table.
+            
+ # STEP 8: Due to I have a backup of the table (refer step 5) I am going to remove Null and Empty fields from 2022_original table.           
+            
+DELETE FROM 2022_original
+WHERE (ride_id IS NULL OR TRIM(ride_id)='')
+   OR (rideable_type IS NULL OR TRIM(rideable_type)='')
+   OR (started_at IS NULL OR TRIM(started_at)='')
+   OR (ended_at IS NULL OR TRIM(ended_at)='')
+   OR (start_station_name IS NULL OR TRIM(start_station_name)='')
+   OR (start_station_id IS NULL OR TRIM(start_station_id)='')
+   OR (end_station_name IS NULL OR TRIM(end_station_name)='')
+   OR (end_station_id IS NULL OR TRIM(end_station_id)='')
+   OR (start_lat IS NULL OR TRIM(start_lat)='')
+   OR (start_lng IS NULL OR TRIM(start_lng)='')
+   OR (end_lat IS NULL OR TRIM(end_lat)='')
+   OR (end_lng IS NULL OR TRIM(end_lng)='')
+   OR (member_casual IS NULL OR TRIM(member_casual)=''); 
+            # 1.227.638 fields are been removed from 2022_original table.
+
+#STEP 9: I have to remove duplicate values (refer to step 6). My plan is to make a copy of the original table, insert a query into it by using DISTINCT clause, delete the original table, and rename the 2022_copy table as 2022_original. 
+
+CREATE TABLE 2022_copy LIKE 2022_original;
+
+INSERT INTO 2022_copy
+SELECT DISTINCT(ride_id),rideable_type,started_at,ended_at,start_station_name,start_station_id,end_station_name,end_station_id,start_lat,start_lng,end_lat,end_lng,member_casual
+FROM 2022_original;
+          # Query has returned 3.699.152 fields.
+          
+DROP TABLE 2022_original;
+ALTER TABLE 2022_copy RENAME TO 2022_original;
+
+#STEP 10: I am going to continue with the cleaning process. Since I realized that I don´t need some columns for my analysis, those columns should be removed.
+
+ALTER TABLE 2022_original DROP COLUMN ride_id;
+ALTER TABLE 2022_original DROP COLUMN start_station_id;
+ALTER TABLE 2022_original DROP COLUMN end_station_id;
+
+# STEP 11: I am going to remove leading and trailing spaces from a string with the TRIM function. I will repeat the idea I worked with in step 9.
+
+CREATE TABLE 2022_copy LIKE 2022_original;
+
+INSERT INTO 2022_copy
+SELECT TRIM(rideable_type),
+TRIM(started_at),
+TRIM(ended_at),
+TRIM(start_station_name),
+TRIM(end_station_name),
+TRIM(start_lat),
+TRIM(start_lng),
+TRIM(end_lat),
+TRIM(end_lng),
+TRIM(member_casual)
+FROM 2022_original;
+
+DROP TABLE 2022_original;
+
+ALTER TABLE 2022_copy RENAME TO 2022_original;
+
+SELECT * FROM 2022_original
+LIMIT 10;
+
+#STEP 12: Transforming the values of the rideable_type column.
+
+UPDATE 2022_original SET rideable_type='Electric' WHERE rideable_type='electric_bike';
+UPDATE 2022_original SET rideable_type='Classic' WHERE rideable_type='classic_bike';
+UPDATE 2022_original SET rideable_type='Docked' WHERE rideable_type='docked_bike';
+
+SELECT DISTINCT(rideable_type)
+FROM 2022_original;
+
+#STEP 13: The first word in the casual-member column should be capitalized, and inconsistent values should be removed. Repeat steps 9 and 11 procedures.
+
+CREATE TABLE 2022_copy LIKE 2022_original;
+
+INSERT INTO 2022_copy
+SELECT rideable_type, started_at,ended_at,start_station_name,end_station_name,start_lat,start_lng,end_lat,end_lng,LEFT(member_casual,6) AS member_casual
+FROM 2022_original;
+
+SELECT DISTINCT(member_casual) FROM
+2022_copy;
+
+UPDATE 2022_copy SET member_casual='Casual' WHERE member_casual='"casua';
+UPDATE 2022_copy SET member_casual='Member' WHERE member_casual='"membe';
+
+
+DROP TABLE 2022_original;
+
+ALTER TABLE 2022_original RENAME TO 2022_clean;
+
+
+
+SELECT * FROM 2022_original;
+
+#STEP 14 To keep track of the PROCESS PHASE, I saved the 2022_original table as a csv file.
+
+SELECT * INTO OUTFILE 'C:\\ProgramData\\MySQL\\MySQL Server 8.0\\Uploads\\2022_clean.csv' FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"' ESCAPED BY '\\' LINES TERMINATED BY '\n' FROM 2022_clean;
+
+#STEP 15: Creating a temporary table by adding new calculated fields to my table and ordering it according to my analysis plan.
+#STEP16:Removimg OUTLIERS filtering the temporary table by DURATION AND DISTANCE (CRITERIA AS FOLLOW: DURATION MORE THAN 1 MINUTE AND LESS THAN 3 HOURS, AND DISTANCE MORE THAN 10 METERS AND LESS THAN 100 KM. Saving the final Table.
+
+CREATE TEMPORARY TABLE 2022_Final SELECT rideable_type AS Bike_Type, started_at AS Started, ended_at AS Ended,TIMEDIFF(ended_at,started_at) AS Ride_Length, DAYNAME(started_at) AS Day_of_Week,
+CASE 
+ WHEN TIME(started_at) BETWEEN '19:00:00' AND '22:00:00' THEN "Evening"
+ WHEN TIME(started_at) BETWEEN '06:00:00' AND '11:59:59' THEN "Morning"
+ WHEN TIME(started_at) BETWEEN '12:00:00' AND '18:59:59' THEN "Afternoon"
+ ELSE "Night"
+ END AS Part_of_Day, MONTHNAME(started_at) AS Month,
+ CASE 
+ WHEN started_at BETWEEN '2022-12-01' AND '2022-12-31' THEN "Winter"
+ WHEN started_at BETWEEN '2022-01-01' AND '2022-01-31' THEN "Winter"
+ WHEN started_at BETWEEN '2022-02-01' AND '2022-02-28' THEN "Winter"
+ WHEN started_at BETWEEN '2022-03-01' AND '2022-03-31' THEN 'Spring'
+ WHEN started_at BETWEEN '2022-04-01' AND '2022-04-30' THEN 'Spring'
+ WHEN started_at BETWEEN '2022-05-01' AND '2022-05-31' THEN 'Spring'
+ WHEN started_at BETWEEN '2022-06-01' AND '2022-06-30' THEN 'Summer'
+ WHEN started_at BETWEEN '2022-07-01' AND '2022-07-31' THEN 'Summer'
+ WHEN started_at BETWEEN '2022-08-01' AND '2022-08-31' THEN 'Summer'
+ ELSE "Autumn"
+ END AS Season, start_station_name AS Start_Station_Name, end_station_name AS End_Station_Name, start_lat AS Start_Latitude, start_lng AS Start_Longitude, end_lat AS End_Latitude,end_lng AS End_Longitude,
+ (ACOS(SIN(RADIANS(start_lat)) * SIN(RADIANS(end_lat)) + 
+COS(RADIANS(start_lat)) * COS(RADIANS(end_lat)) * 
+COS(RADIANS(start_lng) - RADIANS(end_lng))) * 6378) AS Distance, CONCAT(UPPER(LEFT(member_casual,1)), LOWER(SUBSTR(member_casual,2))) AS Customer
+FROM 2022_clean
+WHERE TIMEDIFF(ended_at,started_at) BETWEEN 300 AND 7200 AND (ACOS(SIN(RADIANS(start_lat)) * SIN(RADIANS(end_lat)) + 
+COS(RADIANS(start_lat)) * COS(RADIANS(end_lat)) * 
+COS(RADIANS(start_lng) - RADIANS(end_lng))) * 6378) BETWEEN 1 AND 50
+ORDER BY Started;
+
+
+# STEP 17:  Start Analysis.
+
+SELECT COUNT(Customer)
+FROM 2022_Final
+WHERE Customer='Member';
+  # There are 1.509.197 members
+  
+SELECT COUNT(Customer)
+FROM 2022_Final
+WHERE Customer='Casual';
+     # There are 1.042.075 casual riders.
+     
+
+SELECT max(Ride_Length) AS Ride_Lenght_Average
+FROM 2022_Final;
+  #max value is 00:59:59
+  
+SELECT MIN(Ride_Length)
+FROM 2022_Final;
+    #min value id 00:01:00
+    
+SELECT Customer,Bike_Type, Count(Bike_Type)
+FROM 2022_Final
+GROUP BY Bike_Type,Customer;
+      #Preferred Bke Type
+      
+SELECT Customer, Day_of_Week, COUNT(Started)
+FROM 2022_Final
+GROUP BY Day_of_Week, Customer;
+
+SELECT Customer,Part_of_Day,COUNT(Started)
+FROM 2022_Final
+GROUP BY Part_of_Day,Customer;
+
+SELECT Customer,Part_of_Day, Day_of_Week ,COUNT(Started)
+FROM 2022_Final
+GROUP BY Day_of_Week,Part_of_Day,Customer;
+      
+SELECT Customer, Month, COUNT(Started)
+FROM 2022_Final
+GROUP BY Month, Customer;
+      #Total Rides by Month / Customer
+
+SELECT Customer, Season, COUNT(Started)
+FROM 2022_Final
+GROUP BY Season,Customer;
+      #Total Rides by Season / Customer
+      
+SELECT 
+SEC_TO_TIME(AVG(TIME_TO_SEC (Ride_Length))) AS Average_Ride_Length_Members
+FROM 2022_Final
+WHERE Customer="Member";
+    # Average Members Ride Lenght is 14 min 12 sec
+    
+SELECT 
+SEC_TO_TIME(AVG(TIME_TO_SEC (Ride_Length)))
+FROM 2022_Final
+WHERE Customer="Casual";
+   # Average Casual´s Ride Lenght is 18 min 02 sec
+   
+SELECT 
+Customer, Day_of_Week, SEC_TO_TIME(AVG(TIME_TO_SEC (Ride_Length))) AS 'Ride Length'
+FROM 2022_Final
+GROUP BY Day_of_Week, Customer;
+
+SELECT 
+Customer, Part_of_Day, SEC_TO_TIME(AVG(TIME_TO_SEC (Ride_Length))) AS 'Ride Length'
+FROM 2022_Final
+GROUP BY Part_of_Day, Customer;
+   
+SELECT 
+Customer, Month, SEC_TO_TIME(AVG(TIME_TO_SEC (Ride_Length))) AS 'Ride Length'
+FROM 2022_Final
+GROUP BY Customer, Month
+ORDER BY 'Ride Lenght' DESC;
+   # Average Ride Lenght by Month
+   
+SELECT 
+Customer, Season, SEC_TO_TIME(AVG(TIME_TO_SEC (Ride_Length))) AS 'Ride Length'
+FROM 2022_Final
+GROUP BY Customer, Season
+ORDER BY 'Ride Lenght' DESC;
+   # Average Ride Lenght by Season
+   
+   SELECT Customer, Season, SUM(Distance) AS Total_Distance
+   FROM 2022_Final
+   GROUP BY Season, Customer; 
+       #Total Distance by Season
+   
+
+SELECT Customer, Season, Day_of_Week, COUNT(Day_of_Week) AS Ranking
+FROM 2022_Final
+GROUP BY Day_of_Week, Season, Customer;
+ #Day of Week by Season
+  
+SELECT avg(ROUND(Distance,2))
+FROM 2022_Final
+WHERE Customer='Member';
+ #average distance Member is 2.70 km
+ 
+SELECT avg(Distance)
+FROM 2022_Final
+WHERE Customer='Casual';
+     #average distance Casual is 2.69 km
+     
+SELECT MAX(Distance)
+FROM 2022_Final
+WHERE Customer='Casual';
+
+SELECT Month, avg(ROUND(distance,2)), Customer
+FROM 2022_Final
+GROUP BY Month,Customer
+ORDER BY avg(Month) DESC;
+  #Average Distance Mont / Customer
+
+SELECT Month, avg(distance), Customer
+FROM 2022_Final
+WHERE Customer='Member'
+GROUP BY Month
+ORDER BY avg(Distance) DESC;
+
+SELECT Season, avg(distance), Customer
+FROM 2022_Final
+WHERE Customer='Member'
+GROUP BY Season
+ORDER BY avg(Distance) DESC;
+
+SELECT Season, avg(distance), Customer
+FROM 2022_Final
+WHERE Customer='Casual'
+GROUP BY Season
+ORDER BY avg(Distance) DESC;
+
+SELECT Season, avg(round(Distance,2)), Customer
+FROM 2022_Final
+GROUP BY Customer, Season
+ORDER BY avg(Distance) DESC;
+
+SELECT Customer, Season, Part_of_Day, Count(Part_of_Day) AS 'Part of Day'
+FROM 2022_Final
+GROUP BY Part_of_Day, Season,Customer;
+
+SELECT Customer, Season, Count(Part_of_Day)
+FROM 2022_Final
+GROUP BY Season,Customer;
+
+SELECT Customer, Month, Count(Part_of_Day)
+FROM 2022_Final
+GROUP BY Month,Customer;
+
+
+SELECT Customer,Bike_Type, Count(Bike_Type)
+FROM 2022_Final
+GROUP BY Bike_Type,Customer;
+
+SELECT DISTINCT (Start_Station_Name)
+FROM 2022_Final
+ORDER BY Start_Station_Name;
+
+SELECT Start_Station_Name, COUNT(Start_Station_Name) AS Start_Station_Ranking
+FROM 2022_Final
+GROUP BY Start_Station_Name
+ORDER BY Start_Station_Ranking DESC
+LIMIT 10;
+
+SELECT Start_Station_Name, COUNT(Start_Station_Name) AS Start_Station_Ranking
+FROM 2022_Final
+WHERE Customer ='Casual'
+GROUP BY Start_Station_Name
+ORDER BY Start_Station_Ranking DESC
+LIMIT 10;
+
+SELECT Start_Station_Name, COUNT(Start_Station_Name) AS Start_Station_Ranking
+FROM 2022_Final
+WHERE Customer ='Member'
+GROUP BY Start_Station_Name
+ORDER BY Start_Station_Ranking DESC
+LIMIT 10;
+
+SELECT Start_Station_Name, COUNT(Start_Station_Name) AS Start_Station_Ranking
+FROM 2022_Final
+GROUP BY Start_Station_Name
+ORDER BY Start_Station_Ranking ASC
+LIMIT 10;
+
+SELECT Start_Station_Name, COUNT(Start_Station_Name) AS Start_Station_Ranking
+FROM 2022_Final
+WHERE Customer ='Casual'
+GROUP BY Start_Station_Name
+ORDER BY Start_Station_Ranking ASC
+LIMIT 10;
+
+SELECT Start_Station_Name, COUNT(Start_Station_Name) AS 'Start_Station_Ranking'
+FROM 2022_Final
+GROUP BY Start_Station_Name
+HAVING COUNT(Start_Station_Name)<2;
+
+SELECT End_Station_Name, COUNT(End_Station_Name) AS End_Ranking
+FROM 2022_Final
+GROUP BY End_Station_Name
+ORDER BY End_Ranking DESC
+LIMIT 10;
+
+SELECT End_Station_Name, COUNT(End_Station_Name) AS End_Ranking
+FROM 2022_Final
+WHERE Customer ='Casual'
+GROUP BY End_Station_Name
+ORDER BY End_Ranking DESC
+LIMIT 10;
+
+SELECT End_Station_Name, COUNT(End_Station_Name) AS End_Ranking
+FROM 2022_Final
+WHERE Customer ='Member'
+GROUP BY End_Station_Name
+ORDER BY End_Ranking DESC
+LIMIT 10;
+
+SELECT Start_Station_Name, COUNT(Start_Station_Name)
+FROM 2022_Final
+GROUP BY Start_Station_Name
+HAVING COUNT(Start_Station_Name)<2;
+           
+
+SELECT End_Station_Name, COUNT(End_Station_Name)
+FROM 2022_Final
+GROUP BY End_Station_Name
+HAVING COUNT(End_Station_Name)<2;
